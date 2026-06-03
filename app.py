@@ -18,9 +18,6 @@ db.init_app(app)
 def home():
     return "home page"
 
-# with app.app_context():
-#     db.create_all()
-
 # @app.route("/authors")
 # def authors():
 #     search = request.args.get("name", "")
@@ -29,6 +26,9 @@ def home():
 #     else:
 #         authors = Author.query.all()
 #     return render_template("index.html", authors=authors)
+
+# with app.app_context():
+#     db.create_all()
 
 if __name__ == "__main__":
     app.run(debug=True)
