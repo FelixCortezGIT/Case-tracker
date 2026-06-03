@@ -18,6 +18,22 @@ db.init_app(app)
 def home():
     return "home page"
 
+@app.route("/new_case")
+def new_case():
+    return render_template("new_case.html")
+
+@app.route("/case_detail")
+def case_detail():
+    return render_template("case_detail.html")
+
+@app.route("/letter_ques")
+def letter_queue():
+    return render_template("letter_ques.html")
+
+@app.route("/chaser_ques")
+def chaser_queue():
+    return render_template("chaser_ques.html")
+
 # @app.route("/authors")
 # def authors():
 #     search = request.args.get("name", "")
