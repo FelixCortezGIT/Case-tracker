@@ -6,6 +6,8 @@ from database import db
 from model.case import Case
 from model.status import Status
 from model.user import User
+from model.log import Log
+from model.notes import Notes
 
 load_dotenv()
 
@@ -21,6 +23,9 @@ def home():
 @app.route("/new_case", methods=["GET", "POST"])
 def new_case():
     if request.method == "POST":
+        selected_status = Status.query.filter_by(
+            status_name=request.form.get("status")
+        ).first()
         new_case_record = Case(
             customer_name=request.form.get("customer_name"),
             card_number=request.form.get("card_number"),
@@ -28,7 +33,7 @@ def new_case():
             transaction_date=request.form.get("transaction_date"),
             merchant_name=request.form.get("merchant_name"),
             deadline_date=request.form.get("deadline"),
-            status_id=1
+            status_id=selected_status.status_id
         )
         db.session.add(new_case_record)
         db.session.commit()
@@ -46,6 +51,8 @@ def letter_queue():
 @app.route("/chaser_ques")
 def chaser_queue():
     return render_template("chaser_ques.html")
+
+
 
 # with app.app_context():
 #     db.create_all()
