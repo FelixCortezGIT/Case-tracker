@@ -11,7 +11,6 @@ class Case(db.Model):
     merchant_name = db.Column(db.String(100), nullable=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     deadline_date = db.Column(db.Date)
-    notes = db.Column(db.Text)
 
     status_id = db.Column(db.Integer, db.ForeignKey("status.status_id"), nullable=False)
 

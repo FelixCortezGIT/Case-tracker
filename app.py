@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 
 from database import db
 from model.case import Case
@@ -18,8 +18,21 @@ db.init_app(app)
 def home():
     return "home page"
 
-@app.route("/new_case")
+@app.route("/new_case", methods=["GET", "POST"])
 def new_case():
+    if request.method == "POST":
+        new_case_record = Case(
+            customer_name=request.form.get("customer_name"),
+            card_number=request.form.get("card_number"),
+            transaction_amount=request.form.get("transaction_amount"),
+            transaction_date=request.form.get("transaction_date"),
+            merchant_name=request.form.get("merchant_name"),
+            deadline_date=request.form.get("deadline"),
+            status_id=1
+        )
+        db.session.add(new_case_record)
+        db.session.commit()
+        return redirect(url_for("new_case"))
     return render_template("new_case.html")
 
 @app.route("/case_detail")
@@ -33,15 +46,6 @@ def letter_queue():
 @app.route("/chaser_ques")
 def chaser_queue():
     return render_template("chaser_ques.html")
-
-# @app.route("/authors")
-# def authors():
-#     search = request.args.get("name", "")
-#     if search:
-#         authors = Author.query.filter(Author.name.ilike(f"%{search}%")).all()
-#     else:
-#         authors = Author.query.all()
-#     return render_template("index.html", authors=authors)
 
 # with app.app_context():
 #     db.create_all()
