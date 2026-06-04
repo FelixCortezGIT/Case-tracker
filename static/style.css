@@ -1,3 +1,29 @@
+html,
+body {
+    min-height: 100%;
+}
+
 body {
     background-color: #e9ecef;
+}
+
+.case-info-card {
+    min-height: 9rem;
+}
+
+.action-card {
+    min-height: 14rem;
+}
+
+.notes-card {
+    min-height: 18rem;
+}
+
+.notes-textarea {
+    min-height: 11rem;
+    resize: vertical;
+}
+
+.log-card {
+    min-height: 20rem;
 }
