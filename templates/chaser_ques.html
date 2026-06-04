@@ -10,20 +10,19 @@
         <span>Deadline</span>
     </div>
 
-    <div class="d-flex justify-content-between py-2 border-bottom">
-        <span>Case 1</span>
-        <span>2026-06-04</span>
-    </div>
-
-    <div class="d-flex justify-content-between py-2 border-bottom">
-        <span>Case 2</span>
-        <span>2026-06-04</span>
-    </div>
-
-    <div class="d-flex justify-content-between py-2 border-bottom">
-        <span>Case 3</span>
-        <span>2026-06-05</span>
-    </div>
+    {% if cases %}
+        {% for case in cases %}
+            <a href="{{ url_for('case_detail', case_id=case.case_id) }}"
+               class="text-decoration-none text-dark">
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span>Case {{ case.case_id }}</span>
+                    <span>{{ case.deadline_date }}</span>
+                </div>
+            </a>
+        {% endfor %}
+    {% else %}
+        <p class="text-muted mb-0">No cases in chaser queue.</p>
+    {% endif %}
 </div>
 
 {% endblock %}

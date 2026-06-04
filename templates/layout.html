@@ -33,42 +33,125 @@
 
             <div class="col-md-4 d-flex flex-column gap-4">
                 <div class="card p-3 case-info-card">
-                    <h5>Case Info</h5>
-                    <p class="text-muted">Case information will appear here.</p>
+    <               h5>Case Info</h5>
+
+                    {% if selected_case is defined and selected_case %}
+                        <p><strong>Case ID:</strong> {{ selected_case.case_id }}</p>
+                        <p><strong>Customer:</strong> {{ selected_case.customer_name }}</p>
+                        <p><strong>Card:</strong> {{ selected_case.card_number }}</p>
+                        <p><strong>Amount:</strong> {{ selected_case.transaction_amount }}</p>
+                        <p><strong>Transaction Date:</strong> {{ selected_case.transaction_date }}</p>
+                        <p><strong>Merchant:</strong> {{ selected_case.merchant_name }}</p>
+                        <p><strong>Deadline:</strong> {{ selected_case.deadline_date }}</p>
+                        <p><strong>Status:</strong> {{ selected_case.status.status_name }}</p>
+                    {% else %}
+                        <p class="text-muted">Case information will appear here.</p>
+                    {% endif %}
                 </div>
 
                 <div class="card p-3 action-card">
-                    <div class="mb-3">
-                        <label for="deadline" class="form-label">Deadline</label>
-                        <input type="date" class="form-control" id="deadline" name="deadline" form="new-case-form" required>
-                    </div>
 
-                    <div class="mb-3">
-                        <label for="status" class="form-label">Status</label>
-                        <select class="form-select" id="status" name="status" form="new-case-form">
-                            <option value="letter">Letter Sent</option>
-                            <option value="chaser">Chaser Sent</option>
-                            <option value="chargeback">Chargeback</option>
-                            <option value="representment">Representment</option>
-                            <option value="closed">Closed</option>
-                        </select>
-                    </div>
+                    {% if selected_case is defined and selected_case %}
+                        <form method="POST" action="{{ url_for('update_case', case_id=selected_case.case_id) }}">
+                            <div class="mb-3">
+                                <label for="deadline" class="form-label">Deadline</label>
+                                <input
+                                    type="date"
+                                    class="form-control"
+                                    id="deadline"
+                                    name="deadline"
+                                    value="{{ selected_case.deadline_date if selected_case.deadline_date else '' }}">
+                            </div>
 
-                    <button type="submit" form="new-case-form" class="btn btn-secondary w-100">
-                        Confirm
-                    </button>
+                            <div class="mb-3">
+                                <label for="status" class="form-label">Status</label>
+                                <select class="form-select" id="status" name="status">
+                                    <option value="letter" {% if selected_case.status.status_name == "letter" %}selected{% endif %}>Letter Sent</option>
+                                    <option value="chaser" {% if selected_case.status.status_name == "chaser" %}selected{% endif %}>Chaser Sent</option>
+                                    <option value="chargeback" {% if selected_case.status.status_name == "chargeback" %}selected{% endif %}>Chargeback</option>
+                                    <option value="representment" {% if selected_case.status.status_name == "representment" %}selected{% endif %}>Representment</option>
+                                    <option value="closed" {% if selected_case.status.status_name == "closed" %}selected{% endif %}>Closed</option>
+                                </select>
+                            </div>
+
+                            <button type="submit" class="btn btn-secondary w-100">
+                                Update Case
+                            </button>
+                        </form>
+
+                    {% else %}
+                        <div class="mb-3">
+                            <label for="deadline" class="form-label">Deadline</label>
+                            <input type="date" class="form-control" id="deadline" name="deadline" form="new-case-form" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-select" id="status" name="status" form="new-case-form">
+                                <option value="letter">Letter Sent</option>
+                                <option value="chaser">Chaser Sent</option>
+                                <option value="chargeback">Chargeback</option>
+                                <option value="representment">Representment</option>
+                                <option value="closed">Closed</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" form="new-case-form" class="btn btn-secondary w-100">
+                            Confirm
+                        </button>
+                    {% endif %}
+
                 </div>
             </div>
 
             <div class="col-md-5 d-flex flex-column gap-4">
                 <div class="card p-3 notes-card">
                     <h5>Notes</h5>
-                    <textarea class="form-control" rows="5"></textarea>
+
+                    {% if selected_case is defined and selected_case %}
+                        <form method="POST" action="{{ url_for('add_note', case_id=selected_case.case_id) }}">
+                            <textarea class="form-control mb-2" rows="5" name="note_text"></textarea>
+                            <button type="submit" class="btn btn-secondary w-100">Add Note</button>
+                        </form>
+
+                        <hr>
+
+                        {% if notes is defined and notes %}
+                            {% for note in notes %}
+                                <div class="border-bottom mb-2 pb-2">
+                                    <small class="text-muted">{{ note.created_at }}</small>
+                                    <p class="mb-0">{{ note.note_text }}</p>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted">No notes yet.</p>
+                        {% endif %}
+                    {% else %}
+                        <textarea class="form-control" rows="5" name="note_text" form="new-case-form"></textarea>
+                    {% endif %}
                 </div>
 
                 <div class="card p-3 log-card">
                     <h5>Log</h5>
-                    <p class="text-muted">Log entries will appear here.</p>
+
+                    {% if logs is defined and logs %}
+                        {% for log in logs %}
+                            <div class="border-bottom mb-2 pb-2">
+                                <small class="text-muted">{{ log.created_at }}</small>
+                                <p class="mb-0">
+                                    User {{ log.user_id }}
+                                    |
+                                    {{ log.status.status_name }}
+
+                                    {% if log.notes_id %}
+                                        | Note added
+                                    {% endif %}
+                                </p>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">Log entries will appear here.</p>
+                    {% endif %}
                 </div>
             </div>
         </div>
