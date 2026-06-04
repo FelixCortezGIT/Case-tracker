@@ -27,3 +27,8 @@ body {
 .log-card {
     min-height: 20rem;
 }
+
+.queue-card {
+    min-height: 75vh;
+}
+

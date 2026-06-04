@@ -2,6 +2,17 @@
 
 {% block content %}
 
-<h2>Case Detail</h2>
+<h2>Case Work</h2>
+
+<form method="GET" action="{{ url_for('case_detail') }}">
+    <div class="mb-3">
+        <label for="card_search" class="form-label">Search by Card Number</label>
+        <input type="text" class="form-control" id="card_search" name="card_search">
+    </div>
+
+    <button type="submit" class="btn btn-secondary w-100">
+        Search
+    </button>
+</form>
 
 {% endblock %}
