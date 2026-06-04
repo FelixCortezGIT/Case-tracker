@@ -7,27 +7,27 @@
 <form id="new-case-form" method="POST" action="{{ url_for('new_case') }}">
     <div class="mb-3">
         <label for="customer_name" class="form-label">Customer Name</label>
-        <input type="text" class="form-control" id="customer_name" name="customer_name">
+        <input type="text" class="form-control" id="customer_name" name="customer_name" required>
     </div>
 
     <div class="mb-3">
         <label for="card_number" class="form-label">Card Number</label>
-        <input type="text" class="form-control" id="card_number" name="card_number">
+        <input type="text" class="form-control" id="card_number" name="card_number" required>
     </div>
 
     <div class="mb-3">
         <label for="transaction_amount" class="form-label">Transaction Amount</label>
-        <input type="text" class="form-control" id="transaction_amount" name="transaction_amount">
+        <input type="text" class="form-control" id="transaction_amount" name="transaction_amount" required>
     </div>
 
     <div class="mb-3">
         <label for="transaction_date" class="form-label">Transaction Date</label>
-        <input type="date" class="form-control" id="transaction_date" name="transaction_date">
+        <input type="date" class="form-control" id="transaction_date" name="transaction_date" required>
     </div>
 
     <div class="mb-3">
         <label for="merchant_name" class="form-label">Merchant Name</label>
-        <input type="text" class="form-control" id="merchant_name" name="merchant_name">
+        <input type="text" class="form-control" id="merchant_name" name="merchant_name" required>
     </div>
 </form>
 

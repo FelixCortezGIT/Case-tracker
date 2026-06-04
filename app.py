@@ -23,9 +23,15 @@ def home():
 @app.route("/new_case", methods=["GET", "POST"])
 def new_case():
     if request.method == "POST":
+        status_name=request.form.get("status")
+
         selected_status = Status.query.filter_by(
-            status_name=request.form.get("status")
+            status_name=status_name
         ).first()
+
+        if selected_status is None:
+            return "Error: selected status does not exist in database", 400
+
         new_case_record = Case(
             customer_name=request.form.get("customer_name"),
             card_number=request.form.get("card_number"),
@@ -51,8 +57,6 @@ def letter_queue():
 @app.route("/chaser_ques")
 def chaser_queue():
     return render_template("chaser_ques.html")
-
-
 
 # with app.app_context():
 #     db.create_all()
