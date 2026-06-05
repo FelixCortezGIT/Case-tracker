@@ -6,13 +6,50 @@
 
 <form method="GET" action="{{ url_for('case_detail') }}">
     <div class="mb-3">
+        <label for="case_id_search" class="form-label">Search by Case ID</label>
+        <input type="text" class="form-control" id="case_id_search" name="case_id_search">
+    </div>
+
+    <div class="mb-3">
         <label for="card_search" class="form-label">Search by Card Number</label>
         <input type="text" class="form-control" id="card_search" name="card_search">
+    </div>
+
+    <div class="mb-3">
+        <label for="customer_search" class="form-label">Search by Customer Name</label>
+        <input type="text" class="form-control" id="customer_search" name="customer_search">
     </div>
 
     <button type="submit" class="btn btn-secondary w-100">
         Search
     </button>
 </form>
+
+{% if search_results is defined and search_results %}
+    <div class="card p-3 queue-card mt-4">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Case ID</th>
+                    <th>Customer</th>
+                    <th>Status</th>
+                    <th>Deadline</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for case in search_results %}
+                <tr onclick="window.location='{{ url_for('case_detail', case_id=case.case_id) }}'"
+                    style="cursor:pointer;">
+                    <td>{{ case.case_id }}</td>
+                    <td>{{ case.customer_name }}</td>
+                    <td>{{ case.status.status_name }}</td>
+                    <td>{{ case.deadline_date }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endif %}
 
 {% endblock %}

@@ -1,12 +1,36 @@
 html,
 body {
-    min-height: 100%;
+    height: 100%;
+    margin: 0;
 }
 
 body {
+    display: flex;
+    flex-direction: column;
     background-color: #e9ecef;
+    overflow: hidden;
 }
 
+/* celé telo appky medzi navbarom a footerom */
+.app-screen {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* 3 stĺpce sa natiahnu na dostupnú výšku */
+.app-row {
+    height: 100%;
+    min-height: 0;
+}
+
+/* každý stĺpec môže scrollovať samostatne */
+.app-row > div {
+    min-height: 0;
+    overflow-y: auto;
+}
+
+/* karty */
 .case-info-card {
     min-height: 9rem;
 }
@@ -19,27 +43,56 @@ body {
     min-height: 18rem;
 }
 
+.log-card {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.queue-card {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
 .notes-textarea {
     min-height: 11rem;
     resize: vertical;
 }
 
-.log-card {
-    min-height: 20rem;
-}
-
-.queue-card {
-    min-height: 75vh;
-}
-
 .case-label {
     display: inline-block;
-    width: 170px;
+    width: 10.5rem;
     text-align: right;
     font-weight: bold;
-    margin-right: 10px;
+    margin-right: 0.6rem;
 }
 
 .case-label:first-child {
-    margin-top: 10px;
+    margin-top: 0.6rem;
 }
+
+/* menšie displeje: nech sa to nesnaží natlačiť do výšky */
+@media (max-width: 991px) {
+    body {
+        overflow: auto;
+    }
+
+    .app-screen {
+        overflow: visible;
+    }
+
+    .app-row {
+        height: auto;
+    }
+
+    .app-row > div {
+        overflow-y: visible;
+    }
+
+    .log-card,
+    .queue-card {
+        min-height: 20rem;
+    }
+}
+

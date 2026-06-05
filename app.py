@@ -93,16 +93,41 @@ def new_case():
 @app.route("/case_detail")
 def case_detail():
     case_id = request.args.get("case_id")
+    case_id_search = request.args.get("case_id_search")
     card_search = request.args.get("card_search")
+    customer_search = request.args.get("customer_search")
 
     selected_case = None
+    search_results = []
     notes = []
     logs = []
 
     if case_id:
         selected_case = Case.query.get(case_id)
+
+    elif case_id_search:
+        search_results = (
+            Case.query
+            .filter(Case.case_id == case_id_search)
+            .order_by(Case.case_id.desc())
+            .all()
+        )
+
     elif card_search:
-        selected_case = Case.query.filter_by(card_number=card_search).first()
+        search_results = (
+            Case.query
+            .filter(Case.card_number.ilike(f"%{card_search}%"))
+            .order_by(Case.case_id.desc())
+            .all()
+        )
+
+    elif customer_search:
+        search_results = (
+            Case.query
+            .filter(Case.customer_name.ilike(f"%{customer_search}%"))
+            .order_by(Case.case_id.desc())
+            .all()
+        )
 
     if selected_case:
         notes = Notes.query.filter_by(case_id=selected_case.case_id).order_by(Notes.created_at.desc()).all()
@@ -111,6 +136,7 @@ def case_detail():
     return render_template(
         "case_detail.html",
         selected_case=selected_case,
+        search_results=search_results,
         notes=notes,
         logs=logs
     )
