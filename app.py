@@ -195,6 +195,7 @@ def update_case(case_id):
 
     status_name = request.form.get("status")
     deadline = request.form.get("deadline")
+    note_text = request.form.get("note_text")
 
     selected_status = Status.query.filter_by(
         status_name=status_name
@@ -206,6 +207,16 @@ def update_case(case_id):
     system_user = get_system_user()
 
     selected_case.status_id = selected_status.status_id
+    new_note = None
+
+    if note_text and note_text.strip():
+        new_note = Notes(
+            case_id=selected_case.case_id,
+            user_id=system_user.user_id,
+            note_text=note_text.strip()
+        )
+        db.session.add(new_note)
+        db.session.flush()
 
     if status_name == "closed":
         selected_case.deadline_date = None
@@ -219,7 +230,7 @@ def update_case(case_id):
         user_id=system_user.user_id,
         status_id=selected_status.status_id,
         deadline_date=deadline_for_log,
-        notes_id=None
+        notes_id=new_note.note_id if new_note else None
     )
 
     db.session.add(new_log)

@@ -28,7 +28,7 @@
 
     <div class="container-fluid my-3 px-3 flex-grow-1 app-screen">
         <div class="row g-3 app-row">
-            <div class="col-12 col-lg-3 d-flex flex-column">
+            <div class="col-12 col-lg-4 d-flex flex-column">
                 {% block content %}
                 {% endblock %}
             </div>
@@ -42,9 +42,9 @@
                         <p><span class="case-label">Customer:</span> {{ selected_case.customer_name }}</p>
                         <p><span class="case-label">Card:</span> {{ selected_case.card_number }}</p>
                         <p><span class="case-label">Amount:</span> {{ selected_case.transaction_amount }}</p>
-                        <p><span class="case-label">Transaction Date:</span> {{ selected_case.transaction_date }}</p>
+                        <p><span class="case-label">Transaction Date:</span> {{ selected_case.transaction_date.strftime('%d/%m/%Y') if selected_case.transaction_date else '' }}</p>
                         <p><span class="case-label">Merchant:</span> {{ selected_case.merchant_name }}</p>
-                        <p><span class="case-label">Deadline:</span> {{ selected_case.deadline_date }}</p>
+                        <p><span class="case-label">Deadline:</span> {{ selected_case.deadline_date.strftime('%d/%m/%Y') if selected_case.deadline_date else '' }}</p>
                         <p><span class="case-label">Status:</span> {{ selected_case.status.status_name }}</p>
                     {% else %}
                         <p><span class="case-label">Case ID:</span></p>
@@ -61,7 +61,7 @@
                 <div class="card p-3 action-card">
 
                     {% if selected_case is defined and selected_case %}
-                        <form method="POST" action="{{ url_for('update_case', case_id=selected_case.case_id) }}">
+                        <form id="update-case-form" method="POST" action="{{ url_for('update_case', case_id=selected_case.case_id) }}">
                             <div class="mb-3">
                                 <label for="deadline" class="form-label">Deadline</label>
                                 <input
@@ -113,25 +113,25 @@
                 </div>
             </div>
 
-            <div class="col-12 col-lg-5 d-flex flex-column gap-3">
+            <div class="col-12 col-lg-4 d-flex flex-column gap-3">
                 <div class="card p-3 notes-card">
                     <h5>Notes</h5>
 
                     {% if selected_case is defined and selected_case %}
-                        <form method="POST" action="{{ url_for('add_note', case_id=selected_case.case_id) }}">
-                             <div class="form-control mb-2 text-start" style="height: 120px; overflow-y: auto; white-space: pre-wrap; padding: 12px;">
-                                {% for note in notes %}
-                                    <div style="border-bottom: 1px solid #dee2e6; margin-bottom: 6px; padding-bottom: 6px; text-align: left;">
-                                        <small class="text-muted">{{ note.created_at }}</small><br>
-                                        {{ note.note_text }}
-                                    </div>
-                                {% endfor %}
-                            </div>
+                        <div class="form-control mb-2 notes-display">
+                            {% for note in notes %}
+                                <div style="border-bottom: 1px solid #dee2e6; margin-bottom: 6px; padding-bottom: 6px; text-align: left;">
+                                    <small>{{ note.created_at.strftime('%d/%m/%Y %H:%M:%S') }} | {{ note.note_text }}</small>
+                                </div>
+                            {% endfor %}
+                        </div>
 
-                            <textarea class="form-control mb-2" rows="2" name="note_text" placeholder="Write new note..."></textarea>
-
-                            <button type="submit" class="btn btn-secondary w-100">Add Note</button>
-                        </form>
+                        <textarea
+                            class="form-control mb-2"
+                            rows="2"
+                            name="note_text"
+                            form="update-case-form"
+                            placeholder="Write new note..."></textarea>
                     {% else %}
                         <textarea class="form-control" rows="5" name="note_text" form="new-case-form"></textarea>
                     {% endif %}
@@ -143,16 +143,14 @@
                     {% if logs is defined and logs %}
                         {% for log in logs %}
                             <div class="border-bottom mb-2 pb-2">
-                                <small class="text-muted">{{ log.created_at }}</small>
-                                <p class="mb-0">
-                                    User {{ log.user_id }}
-                                    |
-                                    {{ log.status.status_name }}
-
+                                <small>
+                                    {{ log.created_at.strftime('%d/%m/%Y %H:%M:%S') }}
+                                    | User {{ log.user_id }}
+                                    | {{ log.status.status_name }}
                                     {% if log.notes_id %}
                                         | Note added
                                     {% endif %}
-                                </p>
+                                </small>
                             </div>
                         {% endfor %}
                     {% else %}

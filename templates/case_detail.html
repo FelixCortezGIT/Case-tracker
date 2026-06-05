@@ -44,7 +44,7 @@
                     <td>{{ case.case_id }}</td>
                     <td>{{ case.customer_name }}</td>
                     <td>{{ case.status.status_name }}</td>
-                    <td>{{ case.deadline_date }}</td>
+                    <td>{{ case.deadline_date.strftime('%d/%m/%Y') if case.deadline_date else '' }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

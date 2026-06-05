@@ -96,3 +96,47 @@ body {
     }
 }
 
+.case-info-card p {
+    margin-bottom: 0.15rem;
+    font-size: clamp(0.75rem, 0.8vw, 0.9rem);
+}
+
+.case-info-card h5 {
+    margin-bottom: 0.5rem;
+}
+
+.queue-card .table th,
+.queue-card .table td {
+    padding: 0.2rem 0.4rem;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.queue-card .table {
+    font-size: 0.8rem;
+}
+
+.queue-card .table th,
+.queue-card .table td {
+    padding: 0.2rem 0.35rem;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.notes-display {
+    height: 170px;
+    overflow-y: auto;
+    white-space: normal;
+    padding: 0.5rem;
+    text-align: left;
+}
+
+.notes-display div {
+    text-align: left;
+    margin: 0;
+}
+
+.notes-display small {
+    font-size: 0.8rem;
+    font-weight: normal;
+}
