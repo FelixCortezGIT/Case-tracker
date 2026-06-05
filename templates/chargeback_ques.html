@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h2>Chargeback Queue</h2>
+
+<div class="card p-3 queue-card">
+    <div class="d-flex justify-content-between border-bottom pb-2 mb-2 fw-bold">
+        <span>Case</span>
+        <span>Deadline</span>
+    </div>
+
+    {% if cases %}
+        {% for case in cases %}
+            <a href="{{ url_for('case_detail', case_id=case.case_id) }}"
+               class="text-decoration-none text-dark">
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span>Case {{ case.case_id }}</span>
+                    <span>{{ case.deadline_date }}</span>
+                </div>
+            </a>
+        {% endfor %}
+    {% else %}
+        <p class="text-muted mb-0">No cases in chargeback queue.</p>
+    {% endif %}
+</div>
+
+{% endblock %}

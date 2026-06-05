@@ -153,6 +153,16 @@ def chaser_queue():
     cases = Case.query.join(Status).filter(Status.status_name == "chaser").order_by(Case.deadline_date.asc()).all()
     return render_template("chaser_ques.html", cases=cases)
 
+@app.route("/chargeback_ques")
+def chargeback_queue():
+    cases = Case.query.join(Status).filter(Status.status_name == "chargeback").order_by(Case.deadline_date.asc()).all()
+    return render_template("chargeback_ques.html", cases=cases)
+
+@app.route("/representment_ques")
+def representment_queue():
+    cases = Case.query.join(Status).filter(Status.status_name == "representment").order_by(Case.deadline_date.asc()).all()
+    return render_template("representment_ques.html", cases=cases)
+
 @app.route("/case/<int:case_id>/update_case", methods=["POST"])
 def update_case(case_id):
     selected_case = Case.query.get_or_404(case_id)
