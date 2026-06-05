@@ -33,19 +33,26 @@
 
             <div class="col-md-4 d-flex flex-column gap-4">
                 <div class="card p-3 case-info-card">
-    <               h5>Case Info</h5>
+                    <h5>Case Info</h5>
 
                     {% if selected_case is defined and selected_case %}
-                        <p><strong>Case ID:</strong> {{ selected_case.case_id }}</p>
-                        <p><strong>Customer:</strong> {{ selected_case.customer_name }}</p>
-                        <p><strong>Card:</strong> {{ selected_case.card_number }}</p>
-                        <p><strong>Amount:</strong> {{ selected_case.transaction_amount }}</p>
-                        <p><strong>Transaction Date:</strong> {{ selected_case.transaction_date }}</p>
-                        <p><strong>Merchant:</strong> {{ selected_case.merchant_name }}</p>
-                        <p><strong>Deadline:</strong> {{ selected_case.deadline_date }}</p>
-                        <p><strong>Status:</strong> {{ selected_case.status.status_name }}</p>
+                        <p><span class="case-label">Case ID:</span> {{ selected_case.case_id }}</p>
+                        <p><span class="case-label">Customer:</span> {{ selected_case.customer_name }}</p>
+                        <p><span class="case-label">Card:</span> {{ selected_case.card_number }}</p>
+                        <p><span class="case-label">Amount:</span> {{ selected_case.transaction_amount }}</p>
+                        <p><span class="case-label">Transaction Date:</span> {{ selected_case.transaction_date }}</p>
+                        <p><span class="case-label">Merchant:</span> {{ selected_case.merchant_name }}</p>
+                        <p><span class="case-label">Deadline:</span> {{ selected_case.deadline_date }}</p>
+                        <p><span class="case-label">Status:</span> {{ selected_case.status.status_name }}</p>
                     {% else %}
-                        <p class="text-muted">Case information will appear here.</p>
+                        <p><span class="case-label">Case ID:</span></p>
+                        <p><span class="case-label">Customer:</span></p>
+                        <p><span class="case-label">Card:</span></p>
+                        <p><span class="case-label">Amount:</span></p>
+                        <p><span class="case-label">Transaction Date:</span></p>
+                        <p><span class="case-label">Merchant:</span></p>
+                        <p><span class="case-label">Deadline:</span></p>
+                        <p><span class="case-label">Status:</span></p>
                     {% endif %}
                 </div>
 

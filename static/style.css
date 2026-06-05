@@ -31,3 +31,15 @@ body {
 .queue-card {
     min-height: 75vh;
 }
+
+.case-label {
+    display: inline-block;
+    width: 170px;
+    text-align: right;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.case-label:first-child {
+    margin-top: 10px;
+}
