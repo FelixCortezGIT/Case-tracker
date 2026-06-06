@@ -125,6 +125,9 @@ def register():
 
 @app.route("/new_case", methods=["GET", "POST"])
 def new_case():
+    auth_check = login_required()
+    if auth_check:
+        return auth_check
     if request.method == "POST":
         status_name = request.form.get("status")
         note_text = request.form.get("note_text")
@@ -176,19 +179,19 @@ def new_case():
 
 @app.route("/case_detail")
 def case_detail():
+    auth_check = login_required()
+    if auth_check:
+        return auth_check
     case_id = request.args.get("case_id")
     case_id_search = request.args.get("case_id_search")
     card_search = request.args.get("card_search")
     customer_search = request.args.get("customer_search")
-
     selected_case = None
     search_results = []
     notes = []
     logs = []
-
     if case_id:
         selected_case = Case.query.get(case_id)
-
     elif case_id_search:
         search_results = (
             Case.query
@@ -196,7 +199,6 @@ def case_detail():
             .order_by(Case.case_id.desc())
             .all()
         )
-
     elif card_search:
         search_results = (
             Case.query
@@ -204,7 +206,6 @@ def case_detail():
             .order_by(Case.case_id.desc())
             .all()
         )
-
     elif customer_search:
         search_results = (
             Case.query
@@ -212,11 +213,9 @@ def case_detail():
             .order_by(Case.case_id.desc())
             .all()
         )
-
     if selected_case:
         notes = Notes.query.filter_by(case_id=selected_case.case_id).order_by(Notes.created_at.desc()).all()
         logs = Log.query.filter_by(case_id=selected_case.case_id).order_by(Log.created_at.desc()).all()
-
     return render_template(
         "case_detail.html",
         selected_case=selected_case,
@@ -255,32 +254,46 @@ def add_note(case_id):
 
 @app.route("/letter_ques")
 def letter_queue():
+    auth_check = login_required()
+    if auth_check:
+        return auth_check
     cases = Case.query.join(Status).filter(Status.status_name == "letter").order_by(Case.deadline_date.asc()).all()
     cases = add_deadline_status(cases)
     return render_template("letter_ques.html", cases=cases)
 
 @app.route("/chaser_ques")
 def chaser_queue():
+    auth_check = login_required()
+    if auth_check:
+        return auth_check
     cases = Case.query.join(Status).filter(Status.status_name == "chaser").order_by(Case.deadline_date.asc()).all()
     cases = add_deadline_status(cases)
     return render_template("chaser_ques.html", cases=cases)
 
 @app.route("/chargeback_ques")
 def chargeback_queue():
+    auth_check = login_required()
+    if auth_check:
+        return auth_check
     cases = Case.query.join(Status).filter(Status.status_name == "chargeback").order_by(Case.deadline_date.asc()).all()
     cases = add_deadline_status(cases)
     return render_template("chargeback_ques.html", cases=cases)
 
 @app.route("/representment_ques")
 def representment_queue():
+    auth_check = login_required()
+    if auth_check:
+        return auth_check
     cases = Case.query.join(Status).filter(Status.status_name == "representment").order_by(Case.deadline_date.asc()).all()
     cases = add_deadline_status(cases)
     return render_template("representment_ques.html", cases=cases)
 
 @app.route("/manager_dashboard")
 def manager_dashboard():
+    auth_check = login_required()
+    if auth_check:
+        return auth_check
     today = date.today()
-
     open_cases = (
         Case.query
         .join(Status)
