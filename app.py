@@ -1,10 +1,8 @@
 import os
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for, session
-from werkzeug.security import generate_password_hash, check_password_hash
 
 from database import db
-from model.user import User
 from helpers import get_cases_by_status
 from auth_helpers import get_current_user, login_required, manager_required
 from services.dashboard_service import get_dashboard_data
@@ -14,6 +12,7 @@ from services.case_service import (
     add_case_note,
     update_existing_case
 )
+from services.auth_service import authenticate_user, create_user
 
 load_dotenv()
 
@@ -32,16 +31,12 @@ def login():
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
-        user = User.query.filter_by(username=username).first()
+        user = authenticate_user(username, password)
         if user is None:
-            return render_template("login.html", error="Invalid username or password")
-        if not check_password_hash(user.password_hash, password):
             return render_template("login.html", error="Invalid username or password")
         session["user_id"] = user.user_id
         session["username"] = user.username
         session["role"] = user.role
-        if user.role == "manager":
-            return redirect(url_for("new_case"))
         return redirect(url_for("new_case"))
     return render_template("login.html")
 
@@ -59,19 +54,12 @@ def register():
         username = request.form.get("username")
         password = request.form.get("password")
         role = request.form.get("role")
-        existing_user = User.query.filter_by(username=username).first()
-        if existing_user:
+        user_created = create_user(username, password, role)
+        if not user_created:
             return render_template(
                 "register.html",
                 error="Username already exists"
             )
-        new_user = User(
-            username=username,
-            password_hash=generate_password_hash(password),
-            role=role
-        )
-        db.session.add(new_user)
-        db.session.commit()
         return render_template(
             "register.html",
             success="User created successfully"
