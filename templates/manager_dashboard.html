@@ -15,7 +15,7 @@
         <div class="container">
             <a class="navbar-brand mb-0 h1">Case Tracker</a>
 
-            <div class="navbar-nav">
+            <div class="navbar-nav ms-auto align-items-center">
                 {% if session.get("role") == "manager" %}
                     <a class="nav-link" href="/manager_dashboard">Manager Dashboard</a>
                 {% endif %}
@@ -25,6 +25,24 @@
                 <a class="nav-link" href="/chaser_ques">Chaser Queues</a>
                 <a class="nav-link" href="/chargeback_ques">Chargeback Queues</a>
                 <a class="nav-link" href="/representment_ques">Representment Queues</a>
+
+                <div class="nav-item dropdown ms-3">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        {{ session.get("username") }}
+                    </a>
+
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        {% if session.get("role") == "manager" %}
+                            <li>
+                                <a class="dropdown-item" href="/register">Add User</a>
+                            </li>
+                        {% endif %}
+
+                        <li>
+                            <a class="dropdown-item" href="/logout">Logout</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </nav>
