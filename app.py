@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for
 from datetime import date
+from sqlalchemy import func
 
 from database import db
 from model.case import Case
@@ -204,6 +205,44 @@ def representment_queue():
     cases = Case.query.join(Status).filter(Status.status_name == "representment").order_by(Case.deadline_date.asc()).all()
     cases = add_deadline_status(cases)
     return render_template("representment_ques.html", cases=cases)
+
+@app.route("/manager_dashboard")
+def manager_dashboard():
+    today = date.today()
+
+    open_cases = (
+        Case.query
+        .join(Status)
+        .filter(Status.status_name != "closed")
+        .count()
+    )
+    closed_cases = (
+        Case.query
+        .join(Status)
+        .filter(Status.status_name == "closed")
+        .count()
+    )
+    overdue_cases = (
+        Case.query
+        .join(Status)
+        .filter(Status.status_name != "closed")
+        .filter(Case.deadline_date < today)
+        .count()
+    )
+    due_today_cases = (
+        Case.query
+        .join(Status)
+        .filter(Status.status_name != "closed")
+        .filter(Case.deadline_date == today)
+        .count()
+    )
+    return render_template(
+        "manager_dashboard.html",
+        open_cases=open_cases,
+        closed_cases=closed_cases,
+        overdue_cases=overdue_cases,
+        due_today_cases=due_today_cases
+    )
 
 @app.route("/case/<int:case_id>/update_case", methods=["POST"])
 def update_case(case_id):

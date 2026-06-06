@@ -148,3 +148,74 @@ body {
 .queue-row.due-today {
     background-color: #fff3cd;
 }
+
+.manager-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+}
+
+.manager-summary-card {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 0.4rem;
+    padding: 0.75rem;
+    text-align: center;
+}
+
+.manager-summary-number {
+    font-size: 1.6rem;
+    font-weight: bold;
+}
+
+.manager-summary-label {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.manager-screen h2 {
+    margin-bottom: 0.75rem;
+}
+
+.manager-summary-card {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-left: 0.35rem solid #6c757d;
+    border-radius: 0.4rem;
+    padding: 1rem;
+    text-align: left;
+}
+
+.manager-summary-number {
+    font-size: 2rem;
+    font-weight: bold;
+    line-height: 1;
+}
+
+.manager-summary-label {
+    margin-top: 0.4rem;
+    font-size: 0.9rem;
+    color: #495057;
+}
+
+.summary-open {
+    border-left-color: #6c757d;
+}
+
+.summary-overdue {
+    border-left-color: #dc3545;
+}
+
+.summary-due-today {
+    border-left-color: #ffc107;
+}
+
+.summary-closed {
+    border-left-color: #198754;
+}
+
+@media (max-width: 991px) {
+    .manager-summary-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}

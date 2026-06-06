@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager Dashboard</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body class="d-flex flex-column min-vh-100">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
+        <div class="container">
+            <a class="navbar-brand mb-0 h1">Case Tracker</a>
+
+            <div class="navbar-nav">
+                <a class="nav-link" href="/new_case">New Case</a>
+                <a class="nav-link" href="/case_detail">Case Work</a>
+                <a class="nav-link" href="/letter_ques">Letter Queues</a>
+                <a class="nav-link" href="/chaser_ques">Chaser Queues</a>
+                <a class="nav-link" href="/chargeback_ques">Chargeback Queues</a>
+                <a class="nav-link" href="/representment_ques">Representment Queues</a>
+                <a class="nav-link" href="/manager_dashboard">Manager Dashboard</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container-fluid my-3 px-3 flex-grow-1 manager-screen">
+        <h2>Manager Dashboard</h2>
+
+        <div class="card p-3 mb-3">
+            <h5>Case Overview</h5>
+
+            <div class="manager-summary-grid">
+                <div class="manager-summary-card summary-open">
+                    <div class="manager-summary-number">{{ open_cases }}</div>
+                    <div class="manager-summary-label">Open Cases</div>
+                </div>
+
+                <div class="manager-summary-card summary-overdue">
+                    <div class="manager-summary-number">{{ overdue_cases }}</div>
+                    <div class="manager-summary-label">Overdue Cases</div>
+                </div>
+
+                <div class="manager-summary-card summary-due-today">
+                    <div class="manager-summary-number">{{ due_today_cases }}</div>
+                    <div class="manager-summary-label">Due Today</div>
+                </div>
+
+                <div class="manager-summary-card summary-closed">
+                    <div class="manager-summary-number">{{ closed_cases }}</div>
+                    <div class="manager-summary-label">Closed Cases</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+    <footer class="bg-secondary text-white text-center py-2">
+        <small>Case Tracker &copy; 2025</small>
+    </footer>
+
+</body>
+</html>
