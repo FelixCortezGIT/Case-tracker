@@ -33,3 +33,10 @@ The system allows users to create cases, update statuses, manage deadlines, add 
 
 <img width="1155" height="635" alt="4 - new DB" src="https://github.com/user-attachments/assets/5a6948bc-a2db-41f9-b44a-0292b7c568e6" />
 
+<img width="301" height="319" alt="5 - login a register" src="https://github.com/user-attachments/assets/37505c44-8404-406b-84a7-b55f4eead03e" />
+
+<img width="185" height="181" alt="6 - vycistit app" src="https://github.com/user-attachments/assets/0023e7ac-ff9a-4a27-8bc1-b58035b193d1" />
+
+<img width="204" height="269" alt="8" src="https://github.com/user-attachments/assets/25d11bf7-b0f4-4b85-9227-83b2a6bcfb98" />
+
+<img width="231" height="428" alt="7 - struktura nakoniec" src="https://github.com/user-attachments/assets/b4f1da26-2afe-4a3c-a346-948d12a75daa" />
