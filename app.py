@@ -254,6 +254,71 @@ def manager_dashboard():
             "actions": actions,
             "notes_added": notes_added
         })
+        first_logs_subquery = (
+            db.session.query(func.min(Log.log_id).label("first_log_id"))
+            .group_by(Log.case_id)
+            .subquery()
+        )
+        points_statistics = []
+        for user in users:
+            total_log_actions = (
+                Log.query
+                .filter(Log.user_id == user.user_id)
+                .count()
+            )
+            new_cases = (
+                Log.query
+                .filter(Log.user_id == user.user_id)
+                .filter(Log.log_id.in_(first_logs_subquery))
+                .count()
+            )
+            status_actions = total_log_actions - new_cases
+            letter_actions = (
+                Log.query
+                .join(Status)
+                .filter(Log.user_id == user.user_id)
+                .filter(Status.status_name == "letter")
+                .count()
+            )
+            chaser_actions = (
+                Log.query
+                .join(Status)
+                .filter(Log.user_id == user.user_id)
+                .filter(Status.status_name == "chaser")
+                .count()
+            )
+            chargeback_actions = (
+                Log.query
+                .join(Status)
+                .filter(Log.user_id == user.user_id)
+                .filter(Status.status_name == "chargeback")
+                .count()
+            )
+            representment_actions = (
+                Log.query
+                .join(Status)
+                .filter(Log.user_id == user.user_id)
+                .filter(Status.status_name == "representment")
+                .count()
+            )
+            closed_actions = (
+                Log.query
+                .join(Status)
+                .filter(Log.user_id == user.user_id)
+                .filter(Status.status_name == "closed")
+                .count()
+            )
+            points_statistics.append({
+                "username": user.username,
+                "new_cases": new_cases,
+                "status_actions": status_actions,
+                "letter_actions": letter_actions,
+                "chaser_actions": chaser_actions,
+                "chargeback_actions": chargeback_actions,
+                "representment_actions": representment_actions,
+                "closed_actions": closed_actions,
+                "points": (new_cases * 2) + status_actions
+            })
     queue_names = ["letter", "chaser", "chargeback", "representment"]
     queue_statistics = []
     for queue_name in queue_names:
@@ -290,7 +355,8 @@ def manager_dashboard():
         overdue_cases=overdue_cases,
         due_today_cases=due_today_cases,
         queue_statistics=queue_statistics,
-        user_statistics=user_statistics
+        user_statistics=user_statistics,
+        points_statistics=points_statistics
     )
 
 @app.route("/case/<int:case_id>/update_case", methods=["POST"])
