@@ -11,3 +11,4 @@ class Log(db.Model):
     notes_id = db.Column(db.Integer, db.ForeignKey("notes.note_id"), nullable=True)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     status = db.relationship("Status")
+    user = db.relationship("User")

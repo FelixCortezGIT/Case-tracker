@@ -166,7 +166,7 @@
                             <div class="border-bottom mb-2 pb-2">
                                 <small>
                                     {{ log.created_at.strftime('%d/%m/%Y %H:%M:%S') }}
-                                    | User {{ log.user_id }}
+                                    | {{ log.user.username }}
                                     | {{ log.status.status_name }}
                                     {% if log.notes_id %}
                                         | Note added

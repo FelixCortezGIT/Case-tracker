@@ -18,9 +18,6 @@ app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.secret_key = os.getenv("SECRET_KEY", "dev-secret-key")
 
-# temporary user until login is ready
-SYSTEM_USER_ID = 1
-
 db.init_app(app)
 
 def add_deadline_status(cases):
@@ -35,20 +32,6 @@ def add_deadline_status(cases):
         else:
             case.deadline_status = "normal"
     return cases
-
-def get_system_user():
-    """Temporary fallback user until real login exists."""
-    user = User.query.get(SYSTEM_USER_ID)
-    if user is None:
-        user = User(
-            user_id=SYSTEM_USER_ID,
-            username="system",
-            password_hash="temporary",
-            role="admin"
-        )
-        db.session.add(user)
-        db.session.flush()
-    return user
 
 def get_current_user():
     user_id = session.get("user_id")
@@ -139,7 +122,7 @@ def new_case():
         if selected_status is None:
             return "Error: selected status does not exist in database", 400
 
-        system_user = get_system_user()
+        current_user = get_current_user()
 
         new_case_record = Case(
             customer_name=request.form.get("customer_name"),
@@ -157,7 +140,7 @@ def new_case():
         if note_text and note_text.strip():
             new_note = Notes(
                 case_id=new_case_record.case_id,
-                user_id=system_user.user_id,
+                user_id=current_user.user_id,
                 note_text=note_text.strip()
             )
             db.session.add(new_note)
@@ -165,7 +148,7 @@ def new_case():
 
         new_log = Log(
             case_id=new_case_record.case_id,
-            user_id=system_user.user_id,
+            user_id=current_user.user_id,
             status_id=selected_status.status_id,
             deadline_date=request.form.get("deadline"),
             notes_id=new_note.note_id if new_note else None
@@ -226,15 +209,18 @@ def case_detail():
 
 @app.route("/case/<int:case_id>/add_note", methods=["POST"])
 def add_note(case_id):
+    auth_check = login_required()
+    if auth_check:
+        return auth_check
     selected_case = Case.query.get_or_404(case_id)
     note_text = request.form.get("note_text")
 
     if note_text and note_text.strip():
-        system_user = get_system_user()
+        current_user = get_current_user()
 
         new_note = Notes(
             case_id=selected_case.case_id,
-            user_id=system_user.user_id,
+            user_id=current_user.user_id,
             note_text=note_text.strip()
         )
         db.session.add(new_note)
@@ -242,7 +228,7 @@ def add_note(case_id):
 
         new_log = Log(
             case_id=selected_case.case_id,
-            user_id=system_user.user_id,
+            user_id=current_user.user_id,
             status_id=selected_case.status_id,
             deadline_date=selected_case.deadline_date,
             notes_id=new_note.note_id
@@ -290,7 +276,7 @@ def representment_queue():
 
 @app.route("/manager_dashboard")
 def manager_dashboard():
-    auth_check = login_required()
+    auth_check = manager_required()
     if auth_check:
         return auth_check
     today = date.today()
@@ -344,7 +330,6 @@ def manager_dashboard():
             .filter(Log.log_id.in_(first_logs_subquery))
             .count()
         )
-        status_actions = total_log_actions - new_cases
         letter_actions = (
             Log.query
             .join(Status)
@@ -385,13 +370,12 @@ def manager_dashboard():
             "actions": total_log_actions,
             "notes_added": notes_added,
             "new_cases": new_cases,
-            "status_actions": status_actions,
             "letter_actions": letter_actions,
             "chaser_actions": chaser_actions,
             "chargeback_actions": chargeback_actions,
             "representment_actions": representment_actions,
             "closed_actions": closed_actions,
-            "points": (new_cases * 2) + status_actions
+            "points": (new_cases * 2) + letter_actions + chaser_actions + chargeback_actions + representment_actions + closed_actions
         })
     queue_names = ["letter", "chaser", "chargeback", "representment"]
     queue_statistics = []
@@ -434,6 +418,9 @@ def manager_dashboard():
 
 @app.route("/case/<int:case_id>/update_case", methods=["POST"])
 def update_case(case_id):
+    auth_check = login_required()
+    if auth_check:
+        return auth_check
     selected_case = Case.query.get_or_404(case_id)
 
     status_name = request.form.get("status")
@@ -447,7 +434,7 @@ def update_case(case_id):
     if selected_status is None:
         return "Error: selected status does not exist in database", 400
 
-    system_user = get_system_user()
+    current_user = get_current_user()
 
     selected_case.status_id = selected_status.status_id
     new_note = None
@@ -455,7 +442,7 @@ def update_case(case_id):
     if note_text and note_text.strip():
         new_note = Notes(
             case_id=selected_case.case_id,
-            user_id=system_user.user_id,
+            user_id=current_user.user_id,
             note_text=note_text.strip()
         )
         db.session.add(new_note)
@@ -470,7 +457,7 @@ def update_case(case_id):
 
     new_log = Log(
         case_id=selected_case.case_id,
-        user_id=system_user.user_id,
+        user_id=current_user.user_id,
         status_id=selected_status.status_id,
         deadline_date=deadline_for_log,
         notes_id=new_note.note_id if new_note else None
