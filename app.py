@@ -1,16 +1,19 @@
 import os
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for, session
-from datetime import date
-from sqlalchemy import func
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from database import db
-from model.case import Case
-from model.status import Status
 from model.user import User
-from model.log import Log
-from model.notes import Notes
+from helpers import get_cases_by_status
+from auth_helpers import get_current_user, login_required, manager_required
+from services.dashboard_service import get_dashboard_data
+from services.case_service import (
+    get_case_detail_data,
+    create_new_case,
+    add_case_note,
+    update_existing_case
+)
 
 load_dotenv()
 
@@ -19,37 +22,6 @@ app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
 app.secret_key = os.getenv("SECRET_KEY", "dev-secret-key")
 
 db.init_app(app)
-
-def add_deadline_status(cases):
-    today = date.today()
-    for case in cases:
-        if case.deadline_date is None:
-            case.deadline_status = "normal"
-        elif case.deadline_date < today:
-            case.deadline_status = "overdue"
-        elif case.deadline_date == today:
-            case.deadline_status = "due-today"
-        else:
-            case.deadline_status = "normal"
-    return cases
-
-def get_current_user():
-    user_id = session.get("user_id")
-    if user_id is None:
-        return None
-    return User.query.get(user_id)
-
-def login_required():
-    if session.get("user_id") is None:
-        return redirect(url_for("login"))
-    return None
-
-def manager_required():
-    if session.get("user_id") is None:
-        return redirect(url_for("login"))
-    if session.get("role") != "manager":
-        return redirect(url_for("new_case"))
-    return None
 
 @app.route("/")
 def home():
@@ -112,52 +84,14 @@ def new_case():
     if auth_check:
         return auth_check
     if request.method == "POST":
-        status_name = request.form.get("status")
-        note_text = request.form.get("note_text")
-
-        selected_status = Status.query.filter_by(
-            status_name=status_name
-        ).first()
-
-        if selected_status is None:
-            return "Error: selected status does not exist in database", 400
-
         current_user = get_current_user()
-
-        new_case_record = Case(
-            customer_name=request.form.get("customer_name"),
-            card_number=request.form.get("card_number"),
-            transaction_amount=request.form.get("transaction_amount"),
-            transaction_date=request.form.get("transaction_date"),
-            merchant_name=request.form.get("merchant_name"),
-            deadline_date=request.form.get("deadline"),
-            status_id=selected_status.status_id
+        new_case_record = create_new_case(
+            form_data=request.form,
+            current_user=current_user
         )
-        db.session.add(new_case_record)
-        db.session.flush()
-
-        new_note = None
-        if note_text and note_text.strip():
-            new_note = Notes(
-                case_id=new_case_record.case_id,
-                user_id=current_user.user_id,
-                note_text=note_text.strip()
-            )
-            db.session.add(new_note)
-            db.session.flush()
-
-        new_log = Log(
-            case_id=new_case_record.case_id,
-            user_id=current_user.user_id,
-            status_id=selected_status.status_id,
-            deadline_date=request.form.get("deadline"),
-            notes_id=new_note.note_id if new_note else None
-        )
-        db.session.add(new_log)
-        db.session.commit()
-
+        if new_case_record is None:
+            return "Error: selected status does not exist in database", 400
         return redirect(url_for("case_detail", case_id=new_case_record.case_id))
-
     return render_template("new_case.html")
 
 @app.route("/case_detail")
@@ -165,46 +99,15 @@ def case_detail():
     auth_check = login_required()
     if auth_check:
         return auth_check
-    case_id = request.args.get("case_id")
-    case_id_search = request.args.get("case_id_search")
-    card_search = request.args.get("card_search")
-    customer_search = request.args.get("customer_search")
-    selected_case = None
-    search_results = []
-    notes = []
-    logs = []
-    if case_id:
-        selected_case = Case.query.get(case_id)
-    elif case_id_search:
-        search_results = (
-            Case.query
-            .filter(Case.case_id == case_id_search)
-            .order_by(Case.case_id.desc())
-            .all()
-        )
-    elif card_search:
-        search_results = (
-            Case.query
-            .filter(Case.card_number.ilike(f"%{card_search}%"))
-            .order_by(Case.case_id.desc())
-            .all()
-        )
-    elif customer_search:
-        search_results = (
-            Case.query
-            .filter(Case.customer_name.ilike(f"%{customer_search}%"))
-            .order_by(Case.case_id.desc())
-            .all()
-        )
-    if selected_case:
-        notes = Notes.query.filter_by(case_id=selected_case.case_id).order_by(Notes.created_at.desc()).all()
-        logs = Log.query.filter_by(case_id=selected_case.case_id).order_by(Log.created_at.desc()).all()
+    case_data = get_case_detail_data(
+        case_id=request.args.get("case_id"),
+        case_id_search=request.args.get("case_id_search"),
+        card_search=request.args.get("card_search"),
+        customer_search=request.args.get("customer_search")
+    )
     return render_template(
         "case_detail.html",
-        selected_case=selected_case,
-        search_results=search_results,
-        notes=notes,
-        logs=logs
+        **case_data
     )
 
 @app.route("/case/<int:case_id>/add_note", methods=["POST"])
@@ -212,30 +115,12 @@ def add_note(case_id):
     auth_check = login_required()
     if auth_check:
         return auth_check
-    selected_case = Case.query.get_or_404(case_id)
-    note_text = request.form.get("note_text")
-
-    if note_text and note_text.strip():
-        current_user = get_current_user()
-
-        new_note = Notes(
-            case_id=selected_case.case_id,
-            user_id=current_user.user_id,
-            note_text=note_text.strip()
-        )
-        db.session.add(new_note)
-        db.session.flush()
-
-        new_log = Log(
-            case_id=selected_case.case_id,
-            user_id=current_user.user_id,
-            status_id=selected_case.status_id,
-            deadline_date=selected_case.deadline_date,
-            notes_id=new_note.note_id
-        )
-        db.session.add(new_log)
-        db.session.commit()
-
+    current_user = get_current_user()
+    selected_case = add_case_note(
+        case_id=case_id,
+        note_text=request.form.get("note_text"),
+        current_user=current_user
+    )
     return redirect(url_for("case_detail", case_id=selected_case.case_id))
 
 @app.route("/letter_ques")
@@ -243,8 +128,7 @@ def letter_queue():
     auth_check = login_required()
     if auth_check:
         return auth_check
-    cases = Case.query.join(Status).filter(Status.status_name == "letter").order_by(Case.deadline_date.asc()).all()
-    cases = add_deadline_status(cases)
+    cases = get_cases_by_status("letter")
     return render_template("letter_ques.html", cases=cases)
 
 @app.route("/chaser_ques")
@@ -252,8 +136,7 @@ def chaser_queue():
     auth_check = login_required()
     if auth_check:
         return auth_check
-    cases = Case.query.join(Status).filter(Status.status_name == "chaser").order_by(Case.deadline_date.asc()).all()
-    cases = add_deadline_status(cases)
+    cases = get_cases_by_status("chaser")
     return render_template("chaser_ques.html", cases=cases)
 
 @app.route("/chargeback_ques")
@@ -261,8 +144,7 @@ def chargeback_queue():
     auth_check = login_required()
     if auth_check:
         return auth_check
-    cases = Case.query.join(Status).filter(Status.status_name == "chargeback").order_by(Case.deadline_date.asc()).all()
-    cases = add_deadline_status(cases)
+    cases = get_cases_by_status("chargeback")
     return render_template("chargeback_ques.html", cases=cases)
 
 @app.route("/representment_ques")
@@ -270,8 +152,7 @@ def representment_queue():
     auth_check = login_required()
     if auth_check:
         return auth_check
-    cases = Case.query.join(Status).filter(Status.status_name == "representment").order_by(Case.deadline_date.asc()).all()
-    cases = add_deadline_status(cases)
+    cases = get_cases_by_status("representment")
     return render_template("representment_ques.html", cases=cases)
 
 @app.route("/manager_dashboard")
@@ -279,141 +160,10 @@ def manager_dashboard():
     auth_check = manager_required()
     if auth_check:
         return auth_check
-    today = date.today()
-    open_cases = (
-        Case.query
-        .join(Status)
-        .filter(Status.status_name != "closed")
-        .count()
-    )
-    closed_cases = (
-        Case.query
-        .join(Status)
-        .filter(Status.status_name == "closed")
-        .count()
-    )
-    overdue_cases = (
-        Case.query
-        .join(Status)
-        .filter(Status.status_name != "closed")
-        .filter(Case.deadline_date < today)
-        .count()
-    )
-    due_today_cases = (
-        Case.query
-        .join(Status)
-        .filter(Status.status_name != "closed")
-        .filter(Case.deadline_date == today)
-        .count()
-    )
-    users = User.query.all()
-    first_logs_subquery = (
-        db.session.query(func.min(Log.log_id).label("first_log_id"))
-        .group_by(Log.case_id)
-        .subquery()
-    )
-    user_summary = []
-    for user in users:
-        total_log_actions = (
-            Log.query
-            .filter(Log.user_id == user.user_id)
-            .count()
-        )
-        notes_added = (
-            Notes.query
-            .filter(Notes.user_id == user.user_id)
-            .count()
-        )
-        new_cases = (
-            Log.query
-            .filter(Log.user_id == user.user_id)
-            .filter(Log.log_id.in_(first_logs_subquery))
-            .count()
-        )
-        letter_actions = (
-            Log.query
-            .join(Status)
-            .filter(Log.user_id == user.user_id)
-            .filter(Status.status_name == "letter")
-            .count()
-        )
-        chaser_actions = (
-            Log.query
-            .join(Status)
-            .filter(Log.user_id == user.user_id)
-            .filter(Status.status_name == "chaser")
-            .count()
-        )
-        chargeback_actions = (
-            Log.query
-            .join(Status)
-            .filter(Log.user_id == user.user_id)
-            .filter(Status.status_name == "chargeback")
-            .count()
-        )
-        representment_actions = (
-            Log.query
-            .join(Status)
-            .filter(Log.user_id == user.user_id)
-            .filter(Status.status_name == "representment")
-            .count()
-        )
-        closed_actions = (
-            Log.query
-            .join(Status)
-            .filter(Log.user_id == user.user_id)
-            .filter(Status.status_name == "closed")
-            .count()
-        )
-        user_summary.append({
-            "username": user.username,
-            "actions": total_log_actions,
-            "notes_added": notes_added,
-            "new_cases": new_cases,
-            "letter_actions": letter_actions,
-            "chaser_actions": chaser_actions,
-            "chargeback_actions": chargeback_actions,
-            "representment_actions": representment_actions,
-            "closed_actions": closed_actions,
-            "points": (new_cases * 2) + letter_actions + chaser_actions + chargeback_actions + representment_actions + closed_actions
-        })
-    queue_names = ["letter", "chaser", "chargeback", "representment"]
-    queue_statistics = []
-    for queue_name in queue_names:
-        total = (
-            Case.query
-            .join(Status)
-            .filter(Status.status_name == queue_name)
-            .count()
-        )
-        overdue = (
-            Case.query
-            .join(Status)
-            .filter(Status.status_name == queue_name)
-            .filter(Case.deadline_date < today)
-            .count()
-        )
-        due_today = (
-            Case.query
-            .join(Status)
-            .filter(Status.status_name == queue_name)
-            .filter(Case.deadline_date == today)
-            .count()
-        )
-        queue_statistics.append({
-            "queue_name": queue_name,
-            "total": total,
-            "overdue": overdue,
-            "due_today": due_today
-        })
+    dashboard_data = get_dashboard_data()
     return render_template(
         "manager_dashboard.html",
-        open_cases=open_cases,
-        closed_cases=closed_cases,
-        overdue_cases=overdue_cases,
-        due_today_cases=due_today_cases,
-        queue_statistics=queue_statistics,
-        user_summary=user_summary
+        **dashboard_data
     )
 
 @app.route("/case/<int:case_id>/update_case", methods=["POST"])
@@ -421,51 +171,14 @@ def update_case(case_id):
     auth_check = login_required()
     if auth_check:
         return auth_check
-    selected_case = Case.query.get_or_404(case_id)
-
-    status_name = request.form.get("status")
-    deadline = request.form.get("deadline")
-    note_text = request.form.get("note_text")
-
-    selected_status = Status.query.filter_by(
-        status_name=status_name
-    ).first()
-
-    if selected_status is None:
-        return "Error: selected status does not exist in database", 400
-
     current_user = get_current_user()
-
-    selected_case.status_id = selected_status.status_id
-    new_note = None
-
-    if note_text and note_text.strip():
-        new_note = Notes(
-            case_id=selected_case.case_id,
-            user_id=current_user.user_id,
-            note_text=note_text.strip()
-        )
-        db.session.add(new_note)
-        db.session.flush()
-
-    if status_name == "closed":
-        selected_case.deadline_date = None
-        deadline_for_log = None
-    else:
-        selected_case.deadline_date = deadline
-        deadline_for_log = deadline
-
-    new_log = Log(
-        case_id=selected_case.case_id,
-        user_id=current_user.user_id,
-        status_id=selected_status.status_id,
-        deadline_date=deadline_for_log,
-        notes_id=new_note.note_id if new_note else None
+    selected_case = update_existing_case(
+        case_id=case_id,
+        form_data=request.form,
+        current_user=current_user
     )
-
-    db.session.add(new_log)
-    db.session.commit()
-
+    if selected_case is None:
+        return "Error: selected status does not exist in database", 400
     return redirect(url_for("case_detail", case_id=selected_case.case_id))
 
 # with app.app_context():
