@@ -1,8 +1,9 @@
 import os
 from dotenv import load_dotenv
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session
 from datetime import date
 from sqlalchemy import func
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from database import db
 from model.case import Case
@@ -15,6 +16,7 @@ load_dotenv()
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
+app.secret_key = os.getenv("SECRET_KEY", "dev-secret-key")
 
 # temporary user until login is ready
 SYSTEM_USER_ID = 1
@@ -48,9 +50,45 @@ def get_system_user():
         db.session.flush()
     return user
 
+def get_current_user():
+    user_id = session.get("user_id")
+    if user_id is None:
+        return None
+    return User.query.get(user_id)
+
+def login_required():
+    if session.get("user_id") is None:
+        return redirect(url_for("login"))
+    return None
+
+def manager_required():
+    if session.get("user_id") is None:
+        return redirect(url_for("login"))
+    if session.get("role") != "manager":
+        return redirect(url_for("new_case"))
+    return None
+
 @app.route("/")
 def home():
     return "home page"
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        user = User.query.filter_by(username=username).first()
+        if user is None:
+            return render_template("login.html", error="Invalid username or password")
+        if not check_password_hash(user.password_hash, password):
+            return render_template("login.html", error="Invalid username or password")
+        session["user_id"] = user.user_id
+        session["username"] = user.username
+        session["role"] = user.role
+        if user.role == "manager":
+            return redirect(url_for("new_case"))
+        return redirect(url_for("new_case"))
+    return render_template("login.html")
 
 @app.route("/new_case", methods=["GET", "POST"])
 def new_case():
@@ -399,6 +437,9 @@ def update_case(case_id):
 
 # with app.app_context():
 #     db.create_all()
+
+# with app.app_context():
+#     print(generate_password_hash("manager123"))
 
 if __name__ == "__main__":
     app.run(debug=True)
