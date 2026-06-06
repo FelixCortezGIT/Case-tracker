@@ -55,6 +55,31 @@
                 </div>
             </div>
         </div>
+                <div class="card p-3 mb-3">
+            <h5>Queue Statistics</h5>
+
+            <table class="table table-sm manager-table mb-0">
+                <thead>
+                    <tr>
+                        <th>Queue</th>
+                        <th>Total</th>
+                        <th>Overdue</th>
+                        <th>Due Today</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for queue in queue_statistics %}
+                        <tr>
+                            <td>{{ queue.queue_name|capitalize }}</td>
+                            <td>{{ queue.total }}</td>
+                            <td>{{ queue.overdue }}</td>
+                            <td>{{ queue.due_today }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>

@@ -236,12 +236,42 @@ def manager_dashboard():
         .filter(Case.deadline_date == today)
         .count()
     )
+    queue_names = ["letter", "chaser", "chargeback", "representment"]
+    queue_statistics = []
+    for queue_name in queue_names:
+        total = (
+            Case.query
+            .join(Status)
+            .filter(Status.status_name == queue_name)
+            .count()
+        )
+        overdue = (
+            Case.query
+            .join(Status)
+            .filter(Status.status_name == queue_name)
+            .filter(Case.deadline_date < today)
+            .count()
+        )
+        due_today = (
+            Case.query
+            .join(Status)
+            .filter(Status.status_name == queue_name)
+            .filter(Case.deadline_date == today)
+            .count()
+        )
+        queue_statistics.append({
+            "queue_name": queue_name,
+            "total": total,
+            "overdue": overdue,
+            "due_today": due_today
+        })
     return render_template(
         "manager_dashboard.html",
         open_cases=open_cases,
         closed_cases=closed_cases,
         overdue_cases=overdue_cases,
-        due_today_cases=due_today_cases
+        due_today_cases=due_today_cases,
+        queue_statistics=queue_statistics
     )
 
 @app.route("/case/<int:case_id>/update_case", methods=["POST"])

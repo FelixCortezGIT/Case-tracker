@@ -219,3 +219,9 @@ body {
         grid-template-columns: 1fr 1fr;
     }
 }
+
+.manager-table th,
+.manager-table td {
+    vertical-align: middle;
+    padding: 0.45rem 0.5rem;
+}
