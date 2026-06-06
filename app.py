@@ -249,10 +249,50 @@ def manager_dashboard():
             .filter(Notes.user_id == user.user_id)
             .count()
         )
+        letter_actions = (
+            Log.query
+            .join(Status)
+            .filter(Log.user_id == user.user_id)
+            .filter(Status.status_name == "letter")
+            .count()
+        )
+        chaser_actions = (
+            Log.query
+            .join(Status)
+            .filter(Log.user_id == user.user_id)
+            .filter(Status.status_name == "chaser")
+            .count()
+        )
+        chargeback_actions = (
+            Log.query
+            .join(Status)
+            .filter(Log.user_id == user.user_id)
+            .filter(Status.status_name == "chargeback")
+            .count()
+        )
+        representment_actions = (
+            Log.query
+            .join(Status)
+            .filter(Log.user_id == user.user_id)
+            .filter(Status.status_name == "representment")
+            .count()
+        )
+        closed_actions = (
+            Log.query
+            .join(Status)
+            .filter(Log.user_id == user.user_id)
+            .filter(Status.status_name == "closed")
+            .count()
+        )
         user_statistics.append({
             "username": user.username,
             "actions": actions,
-            "notes_added": notes_added
+            "notes_added": notes_added,
+            "letter_actions": letter_actions,
+            "chaser_actions": chaser_actions,
+            "chargeback_actions": chargeback_actions,
+            "representment_actions": representment_actions,
+            "closed_actions": closed_actions
         })
     queue_names = ["letter", "chaser", "chargeback", "representment"]
     queue_statistics = []

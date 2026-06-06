@@ -90,6 +90,11 @@
                         <th>User</th>
                         <th>Actions</th>
                         <th>Notes Added</th>
+                        <th>Letter</th>
+                        <th>Chaser</th>
+                        <th>Chargeback</th>
+                        <th>Representment</th>
+                        <th>Closed</th>
                     </tr>
                 </thead>
 
@@ -99,6 +104,11 @@
                             <td>{{ user.username }}</td>
                             <td>{{ user.actions }}</td>
                             <td>{{ user.notes_added }}</td>
+                            <td>{{ user.letter_actions }}</td>
+                            <td>{{ user.chaser_actions }}</td>
+                            <td>{{ user.chargeback_actions }}</td>
+                            <td>{{ user.representment_actions }}</td>
+                            <td>{{ user.closed_actions }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
