@@ -140,3 +140,11 @@ body {
     font-size: 0.8rem;
     font-weight: normal;
 }
+
+.queue-row.overdue {
+    background-color: #f8d7da;
+}
+
+.queue-row.due-today {
+    background-color: #fff3cd;
+}

@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for
+from datetime import date
 
 from database import db
 from model.case import Case
@@ -19,10 +20,22 @@ SYSTEM_USER_ID = 1
 
 db.init_app(app)
 
+def add_deadline_status(cases):
+    today = date.today()
+    for case in cases:
+        if case.deadline_date is None:
+            case.deadline_status = "normal"
+        elif case.deadline_date < today:
+            case.deadline_status = "overdue"
+        elif case.deadline_date == today:
+            case.deadline_status = "due-today"
+        else:
+            case.deadline_status = "normal"
+    return cases
+
 def get_system_user():
     """Temporary fallback user until real login exists."""
     user = User.query.get(SYSTEM_USER_ID)
-
     if user is None:
         user = User(
             user_id=SYSTEM_USER_ID,
@@ -32,7 +45,6 @@ def get_system_user():
         )
         db.session.add(user)
         db.session.flush()
-
     return user
 
 @app.route("/")
@@ -172,21 +184,25 @@ def add_note(case_id):
 @app.route("/letter_ques")
 def letter_queue():
     cases = Case.query.join(Status).filter(Status.status_name == "letter").order_by(Case.deadline_date.asc()).all()
+    cases = add_deadline_status(cases)
     return render_template("letter_ques.html", cases=cases)
 
 @app.route("/chaser_ques")
 def chaser_queue():
     cases = Case.query.join(Status).filter(Status.status_name == "chaser").order_by(Case.deadline_date.asc()).all()
+    cases = add_deadline_status(cases)
     return render_template("chaser_ques.html", cases=cases)
 
 @app.route("/chargeback_ques")
 def chargeback_queue():
     cases = Case.query.join(Status).filter(Status.status_name == "chargeback").order_by(Case.deadline_date.asc()).all()
+    cases = add_deadline_status(cases)
     return render_template("chargeback_ques.html", cases=cases)
 
 @app.route("/representment_ques")
 def representment_queue():
     cases = Case.query.join(Status).filter(Status.status_name == "representment").order_by(Case.deadline_date.asc()).all()
+    cases = add_deadline_status(cases)
     return render_template("representment_ques.html", cases=cases)
 
 @app.route("/case/<int:case_id>/update_case", methods=["POST"])

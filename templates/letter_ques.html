@@ -15,7 +15,7 @@
         {% for case in cases %}
             <a href="{{ url_for('case_detail', case_id=case.case_id) }}"
                class="text-decoration-none text-dark">
-                <div class="d-flex py-2 border-bottom">
+                <div class="d-flex py-2 border-bottom queue-row {{ case.deadline_status }}">
                     <span style="width: 20%;">Case {{ case.case_id }}</span>
                     <span style="width: 50%;">{{ case.customer_name }}</span>
                     <span style="width: 30%;">{{ case.deadline_date.strftime('%d/%m/%Y') if case.deadline_date else '' }}</span>
