@@ -95,6 +95,34 @@ def logout():
     session.clear()
     return redirect(url_for("login"))
 
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    auth_check = manager_required()
+    if auth_check:
+        return auth_check
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        role = request.form.get("role")
+        existing_user = User.query.filter_by(username=username).first()
+        if existing_user:
+            return render_template(
+                "register.html",
+                error="Username already exists"
+            )
+        new_user = User(
+            username=username,
+            password_hash=generate_password_hash(password),
+            role=role
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        return render_template(
+            "register.html",
+            success="User created successfully"
+        )
+    return render_template("register.html")
+
 @app.route("/new_case", methods=["GET", "POST"])
 def new_case():
     if request.method == "POST":

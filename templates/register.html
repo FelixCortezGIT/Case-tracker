@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<h2>Add User</h2>
+
+{% if error %}
+    <div class="alert alert-danger py-2">
+        {{ error }}
+    </div>
+{% endif %}
+
+{% if success %}
+    <div class="alert alert-success py-2">
+        {{ success }}
+    </div>
+{% endif %}
+
+<form method="POST" action="{{ url_for('register') }}">
+    <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input
+            type="text"
+            class="form-control"
+            id="username"
+            name="username"
+            required>
+    </div>
+
+    <div class="mb-3">
+        <label for="password" class="form-label">Temporary Password</label>
+        <input
+            type="password"
+            class="form-control"
+            id="password"
+            name="password"
+            required>
+    </div>
+
+    <div class="mb-3">
+        <label for="role" class="form-label">Role</label>
+        <select class="form-select" id="role" name="role" required>
+            <option value="user">User</option>
+            <option value="manager">Manager</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-secondary w-100">
+        Create User
+    </button>
+</form>
+
+{% endblock %}
