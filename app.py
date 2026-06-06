@@ -236,6 +236,24 @@ def manager_dashboard():
         .filter(Case.deadline_date == today)
         .count()
     )
+    users = User.query.all()
+    user_statistics = []
+    for user in users:
+        actions = (
+            Log.query
+            .filter(Log.user_id == user.user_id)
+            .count()
+        )
+        notes_added = (
+            Notes.query
+            .filter(Notes.user_id == user.user_id)
+            .count()
+        )
+        user_statistics.append({
+            "username": user.username,
+            "actions": actions,
+            "notes_added": notes_added
+        })
     queue_names = ["letter", "chaser", "chargeback", "representment"]
     queue_statistics = []
     for queue_name in queue_names:
@@ -271,7 +289,8 @@ def manager_dashboard():
         closed_cases=closed_cases,
         overdue_cases=overdue_cases,
         due_today_cases=due_today_cases,
-        queue_statistics=queue_statistics
+        queue_statistics=queue_statistics,
+        user_statistics=user_statistics
     )
 
 @app.route("/case/<int:case_id>/update_case", methods=["POST"])

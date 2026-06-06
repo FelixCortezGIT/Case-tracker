@@ -55,7 +55,7 @@
                 </div>
             </div>
         </div>
-                <div class="card p-3 mb-3">
+        <div class="card p-3 mb-3">
             <h5>Queue Statistics</h5>
 
             <table class="table table-sm manager-table mb-0">
@@ -75,6 +75,30 @@
                             <td>{{ queue.total }}</td>
                             <td>{{ queue.overdue }}</td>
                             <td>{{ queue.due_today }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card p-3 mb-3">
+            <h5>User Activity</h5>
+
+            <table class="table table-sm manager-table mb-0">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Actions</th>
+                        <th>Notes Added</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for user in user_statistics %}
+                        <tr>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.actions }}</td>
+                            <td>{{ user.notes_added }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
