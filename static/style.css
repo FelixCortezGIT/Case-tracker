@@ -8,29 +8,23 @@ body {
     display: flex;
     flex-direction: column;
     background-color: #e9ecef;
-    overflow: hidden;
+    overflow-x: hidden;
 }
 
-/* celé telo appky medzi navbarom a footerom */
 .app-screen {
     flex: 1;
     min-height: 0;
-    overflow: hidden;
 }
 
-/* 3 stĺpce sa natiahnu na dostupnú výšku */
 .app-row {
-    height: 100%;
     min-height: 0;
 }
 
-/* každý stĺpec môže scrollovať samostatne */
 .app-row > div {
     min-height: 0;
     overflow-y: auto;
 }
 
-/* karty */
 .case-info-card {
     min-height: 9rem;
 }
@@ -72,27 +66,51 @@ body {
     margin-top: 0.6rem;
 }
 
-/* menšie displeje: nech sa to nesnaží natlačiť do výšky */
 @media (max-width: 991px) {
+    html,
     body {
-        overflow: auto;
+        height: auto;
+        min-height: 100%;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    body {
+        display: block;
     }
 
     .app-screen {
+        min-height: auto;
         overflow: visible;
     }
 
     .app-row {
         height: auto;
+        min-height: auto;
     }
 
     .app-row > div {
-        overflow-y: visible;
+        overflow: visible;
+        min-height: auto;
     }
 
-    .log-card,
-    .queue-card {
-        min-height: 20rem;
+    .queue-card,
+    .log-card {
+        flex: none;
+        min-height: auto;
+        max-height: none;
+        overflow: visible;
+    }
+
+    .notes-card,
+    .case-info-card,
+    .action-card {
+        min-height: auto;
+    }
+
+    footer {
+        position: static;
+        margin-top: 1rem;
     }
 }
 
