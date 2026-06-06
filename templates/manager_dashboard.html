@@ -88,17 +88,36 @@
                 <table class="table table-sm manager-table mb-0">
                     <thead>
                         <tr>
-                            <th><span class="sort-header">User <span class="sort-arrows">↕</span></span></th>
-                            <th><span class="sort-header">Actions <span class="sort-arrows">↕</span></span></th>
-                            <th><span class="sort-header">Notes Added <span class="sort-arrows">↕</span></span></th>
-                            <th><span class="sort-header">New Cases <span class="sort-arrows">↕</span></span></th>
-                            <th><span class="sort-header">Status Actions <span class="sort-arrows">↕</span></span></th>
-                            <th><span class="sort-header">Letter <span class="sort-arrows">↕</span></span></th>
-                            <th><span class="sort-header">Chaser <span class="sort-arrows">↕</span></span></th>
-                            <th><span class="sort-header">Chargeback <span class="sort-arrows">↕</span></span></th>
-                            <th><span class="sort-header">Representment <span class="sort-arrows">↕</span></span></th>
-                            <th><span class="sort-header">Closed <span class="sort-arrows">↕</span></span></th>
-                            <th><span class="sort-header">Points <span class="sort-arrows">↕</span></span></th>
+                            <th>
+                                <span class="sort-header">User</span>
+                            </th>
+                            <th data-sort="notes">
+                                <span class="sort-header">Notes Added <span class="sort-arrows">↕</span></span>
+                            </th>
+                            <th data-sort="new_cases">
+                                <span class="sort-header">New Cases <span class="sort-arrows">↕</span></span>
+                            </th>
+                            <th data-sort="status_actions">
+                                <span class="sort-header">Status Actions <span class="sort-arrows">↕</span></span>
+                            </th>
+                            <th data-sort="letter">
+                                <span class="sort-header">Letter <span class="sort-arrows">↕</span></span>
+                            </th>
+                            <th data-sort="chaser">
+                                <span class="sort-header">Chaser <span class="sort-arrows">↕</span></span>
+                            </th>
+                            <th data-sort="chargeback">
+                                <span class="sort-header">Chargeback <span class="sort-arrows">↕</span></span>
+                            </th>
+                            <th data-sort="representment">
+                                <span class="sort-header">Representment <span class="sort-arrows">↕</span></span>
+                            </th>
+                            <th data-sort="closed">
+                                <span class="sort-header">Closed <span class="sort-arrows">↕</span></span>
+                            </th>
+                            <th data-sort="points">
+                                <span class="sort-header">Points <span class="sort-arrows">↕</span></span>
+                            </th>
                         </tr>
                     </thead>
 
@@ -106,7 +125,6 @@
                         {% for user in user_summary %}
                             <tr>
                                 <td>{{ user.username }}</td>
-                                <td>{{ user.actions }}</td>
                                 <td>{{ user.notes_added }}</td>
                                 <td>{{ user.new_cases }}</td>
                                 <td>{{ user.status_actions }}</td>
@@ -125,6 +143,8 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 
     <footer class="bg-secondary text-white text-center py-2">
         <small>Case Tracker &copy; 2025</small>

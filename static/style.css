@@ -273,7 +273,10 @@ body {
 .user-summary-table-wrap .manager-table td:last-child {
     text-align: center;
     font-weight: bold;
-    background-color: #ffe69c;
+}
+
+.user-summary-table-wrap .manager-table .active-sort-column {
+    background-color: #cfe2ff;
 }
 
 .user-summary-table-wrap .manager-table td:last-child {
