@@ -225,3 +225,86 @@ body {
     vertical-align: middle;
     padding: 0.45rem 0.5rem;
 }
+
+.manager-screen {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.manager-screen > .card {
+    flex-shrink: 0;
+}
+
+.user-summary-card {
+    flex: 1;
+    min-height: 0;
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.user-summary-table-wrap {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+.user-summary-table-wrap .manager-table {
+    min-width: 70rem;
+}
+
+.user-summary-table-wrap .manager-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background-color: #ffffff;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.user-summary-table-wrap .manager-table th,
+.user-summary-table-wrap .manager-table td {
+    white-space: nowrap;
+}
+
+.user-summary-table-wrap .manager-table th:last-child,
+.user-summary-table-wrap .manager-table td:last-child {
+    text-align: center;
+    font-weight: bold;
+    background-color: #ffe69c;
+}
+
+.user-summary-table-wrap .manager-table td:last-child {
+    font-size: 1rem;
+}
+
+.user-summary-table-wrap .manager-table {
+    table-layout: fixed;
+    width: 100%;
+    min-width: 70rem;
+}
+
+.user-summary-table-wrap .manager-table th,
+.user-summary-table-wrap .manager-table td {
+    text-align: center;
+}
+
+.user-summary-table-wrap .manager-table th:first-child,
+.user-summary-table-wrap .manager-table td:first-child {
+    text-align: left;
+}
+
+.sort-header {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    white-space: nowrap;
+}
+
+.sort-arrows {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+

@@ -81,73 +81,46 @@
             </table>
         </div>
 
-        <div class="card p-3 mb-3">
-            <h5>User Activity</h5>
+        <div class="card p-3 user-summary-card">
+            <h5>User Summary</h5>
 
-            <table class="table table-sm manager-table mb-0">
-                <thead>
-                    <tr>
-                        <th>User</th>
-                        <th>Actions</th>
-                        <th>Notes Added</th>
-                        <th>Letter</th>
-                        <th>Chaser</th>
-                        <th>Chargeback</th>
-                        <th>Representment</th>
-                        <th>Closed</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {% for user in user_statistics %}
+            <div class="user-summary-table-wrap">
+                <table class="table table-sm manager-table mb-0">
+                    <thead>
                         <tr>
-                            <td>{{ user.username }}</td>
-                            <td>{{ user.actions }}</td>
-                            <td>{{ user.notes_added }}</td>
-                            <td>{{ user.letter_actions }}</td>
-                            <td>{{ user.chaser_actions }}</td>
-                            <td>{{ user.chargeback_actions }}</td>
-                            <td>{{ user.representment_actions }}</td>
-                            <td>{{ user.closed_actions }}</td>
+                            <th><span class="sort-header">User <span class="sort-arrows">↕</span></span></th>
+                            <th><span class="sort-header">Actions <span class="sort-arrows">↕</span></span></th>
+                            <th><span class="sort-header">Notes Added <span class="sort-arrows">↕</span></span></th>
+                            <th><span class="sort-header">New Cases <span class="sort-arrows">↕</span></span></th>
+                            <th><span class="sort-header">Status Actions <span class="sort-arrows">↕</span></span></th>
+                            <th><span class="sort-header">Letter <span class="sort-arrows">↕</span></span></th>
+                            <th><span class="sort-header">Chaser <span class="sort-arrows">↕</span></span></th>
+                            <th><span class="sort-header">Chargeback <span class="sort-arrows">↕</span></span></th>
+                            <th><span class="sort-header">Representment <span class="sort-arrows">↕</span></span></th>
+                            <th><span class="sort-header">Closed <span class="sort-arrows">↕</span></span></th>
+                            <th><span class="sort-header">Points <span class="sort-arrows">↕</span></span></th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        <div class="card p-3 mb-3">
-            <h5>User Points Summary</h5>
+                    </thead>
 
-            <table class="table table-sm manager-table mb-0">
-                <thead>
-                    <tr>
-                        <th>User</th>
-                        <th>New Cases</th>
-                        <th>Status Actions</th>
-                        <th>Letter</th>
-                        <th>Chaser</th>
-                        <th>Chargeback</th>
-                        <th>Representment</th>
-                        <th>Closed</th>
-                        <th>Points</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {% for user in points_statistics %}
-                        <tr>
-                            <td>{{ user.username }}</td>
-                            <td>{{ user.new_cases }}</td>
-                            <td>{{ user.status_actions }}</td>
-                            <td>{{ user.letter_actions }}</td>
-                            <td>{{ user.chaser_actions }}</td>
-                            <td>{{ user.chargeback_actions }}</td>
-                            <td>{{ user.representment_actions }}</td>
-                            <td>{{ user.closed_actions }}</td>
-                            <td><strong>{{ user.points }}</strong></td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    <tbody>
+                        {% for user in user_summary %}
+                            <tr>
+                                <td>{{ user.username }}</td>
+                                <td>{{ user.actions }}</td>
+                                <td>{{ user.notes_added }}</td>
+                                <td>{{ user.new_cases }}</td>
+                                <td>{{ user.status_actions }}</td>
+                                <td>{{ user.letter_actions }}</td>
+                                <td>{{ user.chaser_actions }}</td>
+                                <td>{{ user.chargeback_actions }}</td>
+                                <td>{{ user.representment_actions }}</td>
+                                <td>{{ user.closed_actions }}</td>
+                                <td><strong>{{ user.points }}</strong></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </main>
 
