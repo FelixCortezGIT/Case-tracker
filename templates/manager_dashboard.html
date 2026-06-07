@@ -50,55 +50,58 @@
     <main class="container-fluid my-3 px-3 flex-grow-1 manager-screen">
         <h2>Manager Dashboard</h2>
 
-        <div class="card p-3 mb-3">
-            <h5>Case Overview</h5>
+        <div class="manager-top-row mb-3">
+            <div class="card p-3 manager-overview-card">
+                <h5>Case Overview</h5>
 
-            <div class="manager-summary-grid">
-                <div class="manager-summary-card summary-open">
-                    <div class="manager-summary-number">{{ open_cases }}</div>
-                    <div class="manager-summary-label">Open Cases</div>
-                </div>
+                <div class="manager-summary-grid">
+                    <div class="manager-summary-card summary-open">
+                        <div class="manager-summary-number">{{ open_cases }}</div>
+                        <div class="manager-summary-label">Open Cases</div>
+                    </div>
 
-                <div class="manager-summary-card summary-overdue">
-                    <div class="manager-summary-number">{{ overdue_cases }}</div>
-                    <div class="manager-summary-label">Overdue Cases</div>
-                </div>
+                    <div class="manager-summary-card summary-overdue">
+                        <div class="manager-summary-number">{{ overdue_cases }}</div>
+                        <div class="manager-summary-label">Overdue Cases</div>
+                    </div>
 
-                <div class="manager-summary-card summary-due-today">
-                    <div class="manager-summary-number">{{ due_today_cases }}</div>
-                    <div class="manager-summary-label">Due Today</div>
-                </div>
+                    <div class="manager-summary-card summary-due-today">
+                        <div class="manager-summary-number">{{ due_today_cases }}</div>
+                        <div class="manager-summary-label">Due Today</div>
+                    </div>
 
-                <div class="manager-summary-card summary-closed">
-                    <div class="manager-summary-number">{{ closed_cases }}</div>
-                    <div class="manager-summary-label">Closed Cases</div>
+                    <div class="manager-summary-card summary-closed">
+                        <div class="manager-summary-number">{{ closed_cases }}</div>
+                        <div class="manager-summary-label">Closed Cases</div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="card p-3 mb-3">
-            <h5>Queue Statistics</h5>
 
-            <table class="table table-sm manager-table mb-0">
-                <thead>
-                    <tr>
-                        <th>Queue</th>
-                        <th>Total</th>
-                        <th>Overdue</th>
-                        <th>Due Today</th>
-                    </tr>
-                </thead>
+            <div class="card p-3 manager-queue-card">
+                <h5>Queue Statistics</h5>
 
-                <tbody>
-                    {% for queue in queue_statistics %}
+                <table class="table table-sm manager-table mb-0">
+                    <thead>
                         <tr>
-                            <td>{{ queue.queue_name|capitalize }}</td>
-                            <td>{{ queue.total }}</td>
-                            <td>{{ queue.overdue }}</td>
-                            <td>{{ queue.due_today }}</td>
+                            <th>Queue</th>
+                            <th>Total</th>
+                            <th>Overdue</th>
+                            <th>Due Today</th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+
+                    <tbody>
+                        {% for queue in queue_statistics %}
+                            <tr>
+                                <td>{{ queue.queue_name|capitalize }}</td>
+                                <td>{{ queue.total }}</td>
+                                <td>{{ queue.overdue }}</td>
+                                <td>{{ queue.due_today }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <div class="card p-3 user-summary-card">

@@ -5,24 +5,34 @@ body {
 }
 
 body {
+    height: 100vh;
     display: flex;
     flex-direction: column;
     background-color: #e9ecef;
-    overflow-x: hidden;
+    overflow: hidden;
+}
+
+.navbar,
+footer {
+    flex-shrink: 0;
 }
 
 .app-screen {
     flex: 1;
     min-height: 0;
+    overflow: hidden;
 }
 
 .app-row {
+    height: 100%;
     min-height: 0;
 }
 
 .app-row > div {
     min-height: 0;
-    overflow-y: auto;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .case-info-card {
@@ -34,19 +44,23 @@ body {
 }
 
 .notes-card {
-    min-height: 18rem;
+    flex-shrink: 0;
 }
 
 .log-card {
-    flex: 1;
+    flex: 1 1 auto;
     min-height: 0;
+    max-height: calc(100vh - 24rem);
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .queue-card {
-    flex: 1;
+    flex: 1 1 auto;
     min-height: 0;
+    max-height: calc(100vh - 10rem);
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .notes-textarea {
@@ -94,12 +108,47 @@ body {
         min-height: auto;
     }
 
-    .queue-card,
+    .queue-card {
+        flex: none;
+        min-height: auto;
+        max-height: 22rem;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
     .log-card {
         flex: none;
         min-height: auto;
+        max-height: 18rem;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .notes-display {
+        height: auto;
+        max-height: 12rem;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .user-summary-card {
+        flex: none;
+        min-height: auto;
         max-height: none;
-        overflow: visible;
+    }
+
+    .user-summary-table-wrap {
+        max-height: 24rem;
+        overflow-y: auto;
+        overflow-x: auto;
+    }
+
+    .manager-summary-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .manager-top-row {
+        grid-template-columns: 1fr;
     }
 
     .notes-card,
@@ -142,8 +191,9 @@ body {
 }
 
 .notes-display {
-    height: 170px;
+    height: 10rem;
     overflow-y: auto;
+    overflow-x: hidden;
     white-space: normal;
     padding: 0.5rem;
     text-align: left;
@@ -232,12 +282,6 @@ body {
     border-left-color: #198754;
 }
 
-@media (max-width: 991px) {
-    .manager-summary-grid {
-        grid-template-columns: 1fr 1fr;
-    }
-}
-
 .manager-table th,
 .manager-table td {
     vertical-align: middle;
@@ -256,11 +300,13 @@ body {
 }
 
 .user-summary-card {
-    flex: 1;
+    flex: 1 1 auto;
     min-height: 0;
+    max-height: calc(100vh - 24rem);
     margin-bottom: 0;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
 .user-summary-table-wrap {
@@ -329,3 +375,31 @@ body {
     color: #6c757d;
 }
 
+.manager-top-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    flex-shrink: 0;
+}
+
+.manager-overview-card,
+.manager-queue-card {
+    min-height: 0;
+}
+
+.manager-overview-card .manager-summary-grid {
+    grid-template-columns: 1fr 1fr;
+}
+
+.manager-overview-card .manager-summary-card {
+    padding: 0.75rem;
+}
+
+.manager-overview-card .manager-summary-number {
+    font-size: 1.6rem;
+}
+
+.manager-queue-card .manager-table th,
+.manager-queue-card .manager-table td {
+    padding: 0.35rem 0.5rem;
+}
