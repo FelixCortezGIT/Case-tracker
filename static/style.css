@@ -377,7 +377,7 @@ footer {
 
 .manager-top-row {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     gap: 1rem;
     flex-shrink: 0;
 }
@@ -402,4 +402,33 @@ footer {
 .manager-queue-card .manager-table th,
 .manager-queue-card .manager-table td {
     padding: 0.35rem 0.5rem;
+}
+
+.manager-activity-card {
+    min-height: 0;
+}
+
+.activity-summary-grid {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.35rem 0.75rem;
+    font-size: 0.9rem;
+}
+
+.activity-summary-grid strong {
+    text-align: right;
+}
+
+.manager-activity-card .form-select,
+.manager-activity-card .form-control,
+.manager-activity-card .btn {
+    font-size: 0.85rem;
+}
+
+.activity-total-label,
+.activity-total-number {
+    border-top: 1px solid #dee2e6;
+    padding-top: 0.35rem;
+    margin-top: 0.2rem;
+    font-weight: bold;
 }

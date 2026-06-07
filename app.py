@@ -148,7 +148,10 @@ def manager_dashboard():
     auth_check = manager_required()
     if auth_check:
         return auth_check
-    dashboard_data = get_dashboard_data()
+    dashboard_data = get_dashboard_data(
+        activity_filter=request.args.get("activity_filter", "today"),
+        date_range=request.args.get("date_range")
+    )
     return render_template(
         "manager_dashboard.html",
         **dashboard_data

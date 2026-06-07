@@ -63,3 +63,27 @@ function highlightActiveColumn(columnIndex) {
         }
     });
 }
+
+const activityFilter = document.getElementById("activity-filter");
+const customRangeWrap = document.getElementById("custom-range-wrap");
+const dateRangeInput = document.getElementById("activity-date-range");
+
+if (activityFilter && customRangeWrap) {
+
+    function toggleDateRange() {
+        if (activityFilter.value === "custom") {
+            customRangeWrap.style.display = "block";
+        } else {
+            customRangeWrap.style.display = "none";
+        }
+    }
+
+    flatpickr(dateRangeInput, {
+        mode: "range",
+        dateFormat: "Y-m-d"
+    });
+
+    toggleDateRange();
+
+    activityFilter.addEventListener("change", toggleDateRange);
+}
